@@ -367,7 +367,7 @@ var MarvelInterceptor = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return BaseService; });
 var BaseService = (function () {
     function BaseService() {
-        this.BASE_URL = 'https://a6ngrx.herokuapp.com/';
+        this.BASE_URL = 'https://a6ngrx.herokuapp.com';
     }
     return BaseService;
 }());
