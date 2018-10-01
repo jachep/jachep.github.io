@@ -25460,7 +25460,7 @@ exports.tryCatch = tryCatch;
 /***/ "./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<app-dialog-header (close)=\"close()\">\r\n  <h3>Add Super Hero</h3>\r\n</app-dialog-header>\r\n<form [formGroup]=\"form\" (submit)=\"save()\">\r\n  <mat-dialog-content>\r\n    <mat-form-field>\r\n      <input matInput placeholder=\"Name\" formControlName=\"name\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\" [displayWith]=\"displayCharacterAutocomplete\" (optionSelected)=\"characterSelected($event)\">\r\n        <mat-option *ngFor=\"let character of filteredCharacters | async\" [value]=\"character\">\r\n          {{ character.name }}\r\n        </mat-option>\r\n      </mat-autocomplete>\r\n      <mat-error *ngIf=\"form.get('name').invalid\">Super heroes all have names!</mat-error>\r\n    </mat-form-field>\r\n    <h4>Super Hero Powers</h4>\r\n    <mat-chip-list>\r\n      <mat-chip\r\n        *ngFor=\"let power of powers\" [class.selected]=\"selectPowers.getValue().indexOf(power) > -1\"\r\n        (click)=\"togglePower(power)\">\r\n        {{ power.name }}\r\n      </mat-chip>\r\n    </mat-chip-list>\r\n  </mat-dialog-content>\r\n  <mat-dialog-actions>\r\n    <button mat-button type=\"submit\">Save</button>\r\n  </mat-dialog-actions>\r\n</form>\r\n"
+module.exports = "<app-dialog-header (close)=\"close()\">\r\n  <h3>Add Super Hero</h3>\r\n</app-dialog-header>\r\n<form [formGroup]=\"form\" (submit)=\"save()\">\r\n  <mat-dialog-content>\r\n    <mat-form-field>\r\n      <input matInput placeholder=\"Name or Search Your Hero\" formControlName=\"name\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\" (optionSelected)=\"characterSelected($event)\">\r\n        <mat-option *ngFor=\"let character of filteredCharacters | async\" [value]=\"character\">\r\n          {{ character.name }}\r\n        </mat-option>\r\n      </mat-autocomplete>\r\n      <mat-error *ngIf=\"form.get('name').invalid\">Super heroes all have names!</mat-error>\r\n    </mat-form-field>\r\n    <h4>Super Hero Powers</h4>\r\n    <mat-chip-list>\r\n      <mat-chip\r\n        *ngFor=\"let power of powers\" [class.selected]=\"selectPowers.getValue().indexOf(power) > -1\"\r\n        (click)=\"togglePower(power)\">\r\n        {{ power.name }}\r\n      </mat-chip>\r\n    </mat-chip-list>\r\n  </mat-dialog-content>\r\n  <mat-dialog-actions>\r\n    <button mat-button type=\"submit\">Save</button>\r\n  </mat-dialog-actions>\r\n</form>\r\n"
 
 /***/ }),
 
@@ -25519,7 +25519,9 @@ var AddHeroDialogComponent = (function () {
     }
     AddHeroDialogComponent.prototype.ngOnInit = function () {
         var _this = this;
+        //this.form = this.formBuilder.group(new DefaultCharacter ());
         this.form = this.formBuilder.group(new __WEBPACK_IMPORTED_MODULE_6__core_models_character_model__["a" /* DefaultCharacter */]());
+        this.form.controls.name.setValue('');
         this.powersService.getPowers().subscribe(function (powers) { return (_this.powers = powers); });
         this.filteredCharacters = this.form
             .get("name")
@@ -25527,16 +25529,11 @@ var AddHeroDialogComponent = (function () {
     };
     AddHeroDialogComponent.prototype.characterSelected = function (event) {
         this.character = event.option.value;
+        this.form.controls.name.setValue(event.option.value.name);
     };
     // TODO: store dialog state in store
     AddHeroDialogComponent.prototype.close = function () {
         this.matDialogRef.close();
-    };
-    AddHeroDialogComponent.prototype.displayCharacterAutocomplete = function (character) {
-        if (character) {
-            return name;
-        }
-        return "";
     };
     AddHeroDialogComponent.prototype.filter = function (name) {
         if (name.length === 0) {
@@ -25563,7 +25560,6 @@ var AddHeroDialogComponent = (function () {
         }
         hero.powers = this.selectPowers.getValue().map(function (power) { return power.id; });
         // TODO: dispatch action to store
-        console.log(hero);
         this.heroesService.createHero(hero).subscribe(function () { return _this.close(); });
     };
     AddHeroDialogComponent.prototype.togglePower = function (power) {
@@ -25693,7 +25689,7 @@ var EditHeroComponent = (function () {
 /***/ "./src/app/+heroes/components/hero-detail/hero-detail.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"hero\">\r\n  <div fxLayout=\"row\" fxLayoutAlign=\"end center\" class=\"actions\">\r\n    <button app-icon-button [routerLink]=\"['/heroes', hero.id, 'edit']\">Edit</button>\r\n  </div>\r\n  <mat-card>\r\n    <mat-card-header>\r\n      <mat-card-title><h3>{{ hero.character.name }}</h3></mat-card-title>\r\n    </mat-card-header>\r\n    <div [ngStyle]=\"{ 'background-image': 'url(' + getLandscapeXlargeImage(hero.character.thumbnail) + ')' }\" mat-card-image></div>\r\n    <mat-card-content>\r\n      <h4>Description</h4>\r\n      <p *ngIf=\"hero.character.description.length > 0\">{{ hero.character.description }}</p>\r\n      <h4>Powers</h4>\r\n      <ul>\r\n        <li *ngFor=\"let power of powers\">{{ power.name | titlecase }}</li>\r\n      </ul>\r\n      <h4>Learn More</h4>\r\n      <ul>\r\n        <li><a [href]=\"getCharacterUrlByType('comiclink').url\" target=\"_blank\">Comics</a></li>\r\n        <li><a [href]=\"getCharacterUrlByType('detail').url\" target=\"_blank\">Detail</a></li>\r\n        <li><a [href]=\"getCharacterUrlByType('wiki').url\" target=\"_blank\">Wiki</a></li>\r\n      </ul>\r\n    </mat-card-content>\r\n  </mat-card>\r\n</div>\r\n"
+module.exports = "<div *ngIf=\"hero\">\r\n  <div fxLayout=\"row\" fxLayoutAlign=\"end center\" class=\"actions\">\r\n    <button app-icon-button [routerLink]=\"['/heroes', hero.id, 'edit']\">Edit</button>\r\n  </div>\r\n  <mat-card>\r\n    <mat-card-header>\r\n      <mat-card-title><h3>{{ hero.character.name }}</h3></mat-card-title>\r\n    </mat-card-header>\r\n    <div [ngStyle]=\"{ 'background-image': 'url(' + getLandscapeXlargeImage(hero.character.thumbnail) + ')' }\" mat-card-image></div>\r\n    <mat-card-content>\r\n      <h4>Description</h4>\r\n      <p *ngIf=\"hero.character.description.length > 0\">{{ hero.character.description }}</p>\r\n      <h4>Powers</h4>\r\n      <ul>\r\n        <li *ngFor=\"let power of powers\">{{ power.name | titlecase }}</li>\r\n      </ul>\r\n      <h4>Learn More</h4>\r\n      <ul>\r\n        <li *ngIf=\"getCharacterUrlByType('comiclink').url\"><a [href]=\"getCharacterUrlByType('comiclink').url\">Comics</a></li>\r\n        <li *ngIf=\"getCharacterUrlByType('detail').url\"><a [href]=\"getCharacterUrlByType('detail').url\">Detail</a></li>\r\n        <li *ngIf=\"getCharacterUrlByType('wiki').url\"><a [href]=\"getCharacterUrlByType('wiki').url\">Wiki</a></li>\r\n      </ul>\r\n    </mat-card-content>\r\n  </mat-card>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -25710,6 +25706,7 @@ module.exports = ":host .actions {\n  margin-bottom: 15px; }\n\n:host mat-card {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeroDetailComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__core_models_character_url_model__ = __webpack_require__("./src/app/core/models/character-url.model.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -25720,11 +25717,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var HeroDetailComponent = (function () {
     function HeroDetailComponent() {
     }
     HeroDetailComponent.prototype.getCharacterUrlByType = function (type) {
-        return this.hero.character.urls.find(function (url) { return url.type === type; });
+        if (this.hero.character.urls.find(function (url) { return url.type === type; })) {
+            return this.hero.character.urls.find(function (url) { return url.type === type; });
+        }
+        else {
+            return new __WEBPACK_IMPORTED_MODULE_1__core_models_character_url_model__["a" /* DefaultUrl */]();
+        }
     };
     HeroDetailComponent.prototype.getLandscapeXlargeImage = function (image) {
         return image.path + "/landscape_xlarge." + image.extension;
@@ -26160,6 +26163,23 @@ var HeroesModule = (function () {
         })
     ], HeroesModule);
     return HeroesModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/core/models/character-url.model.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DefaultUrl; });
+var DefaultUrl = (function () {
+    function DefaultUrl() {
+        this.type = 'default';
+        this.url = '/';
+    }
+    return DefaultUrl;
 }());
 
 

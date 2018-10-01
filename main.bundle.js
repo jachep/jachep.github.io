@@ -202,7 +202,7 @@ module.exports = "<app-layout>\r\n  <div class=\"wrapper\">\r\n    <mat-card cla
 /***/ "./src/app/containers/index/index.component.scss":
 /***/ (function(module, exports) {
 
-module.exports = ":host .wrapper {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: 1fr 1fr;\n      grid-template-columns: 1fr 1fr;\n  grid-gap: 15px; }\n  :host .wrapper mat-card mat-card-header .mat-card-title {\n    font-size: 22px;\n    margin: 0;\n    text-transform: uppercase; }\n  :host .wrapper mat-card mat-card-header h4 {\n    margin: 0; }\n  :host .wrapper mat-card img {\n    cursor: pointer; }\n  :host .wrapper mat-card img.cover-img {\n      position: absolute;\n      -webkit-transition: opacity .50s ease-in-out;\n      transition: opacity .50s ease-in-out; }\n  :host .wrapper mat-card img.cover-img:hover {\n        opacity: 0; }\n  @media screen and (max-width: 599px) {\n    :host .wrapper {\n      -ms-grid-columns: 1fr;\n          grid-template-columns: 1fr; } }\n  @media screen and (min-width: 600px) and (max-width: 959px) {\n    :host .wrapper {\n      -ms-grid-columns: 1fr 1fr;\n          grid-template-columns: 1fr 1fr; } }\n"
+module.exports = ":host .wrapper {\n  display: -ms-grid;\n  display: grid;\n  -ms-grid-columns: 1fr 1fr;\n      grid-template-columns: 1fr 1fr;\n  grid-gap: 15px; }\n  :host .wrapper mat-card mat-card-avatar {\n    margin: 0; }\n  :host .wrapper mat-card mat-card-header .mat-card-title {\n    font-size: 22px;\n    margin: 0;\n    text-transform: uppercase; }\n  :host .wrapper mat-card mat-card-header h4 {\n    margin: 0; }\n  :host .wrapper mat-card img {\n    cursor: pointer; }\n  :host .wrapper mat-card img.cover-img {\n      position: absolute;\n      -webkit-transition: opacity .50s ease-in-out;\n      transition: opacity .50s ease-in-out; }\n  :host .wrapper mat-card img.cover-img:hover {\n        opacity: 0; }\n  @media screen and (max-width: 599px) {\n    :host .wrapper {\n      -ms-grid-columns: 1fr;\n          grid-template-columns: 1fr; } }\n  @media screen and (min-width: 600px) and (max-width: 959px) {\n    :host .wrapper {\n      -ms-grid-columns: 1fr 1fr;\n          grid-template-columns: 1fr 1fr; } }\n"
 
 /***/ }),
 
@@ -323,8 +323,10 @@ var CoreModule = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MarvelInterceptor; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_marvel_service__ = __webpack_require__("./src/app/core/services/marvel.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__environments_environment__ = __webpack_require__("./src/environments/environment.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ts_md5_dist_md5__ = __webpack_require__("./node_modules/ts-md5/dist/md5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ts_md5_dist_md5___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_ts_md5_dist_md5__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_marvel_service__ = __webpack_require__("./src/app/core/services/marvel.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__("./src/environments/environment.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -337,21 +339,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var MarvelInterceptor = (function () {
     function MarvelInterceptor(marvelService) {
         this.marvelService = marvelService;
     }
     MarvelInterceptor.prototype.intercept = function (request, next) {
         if (request.url.indexOf(this.marvelService.BASE_URL) === 0) {
+            var ts = new Date().getTime().toString();
             request = request.clone({
-                params: request.params.set('apikey', __WEBPACK_IMPORTED_MODULE_2__environments_environment__["a" /* environment */].marvel.public)
+                params: request.params
+                    .set('ts', ts)
+                    .set('apikey', __WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].marvel.public)
+                    .set('hash', __WEBPACK_IMPORTED_MODULE_1_ts_md5_dist_md5__["Md5"].hashStr(ts + __WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].marvel.private + __WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].marvel.public).toString())
             });
         }
         return next.handle(request);
     };
     MarvelInterceptor = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_marvel_service__["a" /* MarvelService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__services_marvel_service__["a" /* MarvelService */]])
     ], MarvelInterceptor);
     return MarvelInterceptor;
 }());
@@ -1677,8 +1684,8 @@ var StateModule = (function () {
 var environment = {
     production: false,
     marvel: {
-        private: 'e151e386f1580879cd73b5aa797d12f28ec001ce',
-        public: 'e412b613dc219df8468f501f5524c190'
+        private: '607d41e9d6aa1b477d6fa37e0a855af31a3d0b4d',
+        public: '07747252fc4c8fc7276c5d612cccd77d'
     }
 };
 
