@@ -29,6 +29,146 @@ module.exports = webpackAsyncContext;
 
 /***/ }),
 
+/***/ "./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<app-dialog-header (close)=\"close()\">\r\n  <h3>Add Super Hero</h3>\r\n</app-dialog-header>\r\n<form [formGroup]=\"form\" (submit)=\"save()\">\r\n  <mat-dialog-content>\r\n    <mat-form-field>\r\n      <input matInput placeholder=\"Name or Search Your Hero\" formControlName=\"name\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\" (optionSelected)=\"characterSelected($event)\">\r\n        <mat-option *ngFor=\"let character of filteredCharacters | async\" [value]=\"character\">\r\n          {{ character.name }}\r\n        </mat-option>\r\n      </mat-autocomplete>\r\n      <mat-error *ngIf=\"form.get('name').invalid\">Super heroes all have names!</mat-error>\r\n    </mat-form-field>\r\n    <h4>Super Hero Powers</h4>\r\n    <mat-chip-list>\r\n      <mat-chip\r\n        *ngFor=\"let power of powers | async\" [class.selected]=\"selectPowers.getValue().indexOf(power) > -1\"\r\n        (click)=\"togglePower(power)\">\r\n        {{ power.name }}\r\n      </mat-chip>\r\n    </mat-chip-list>\r\n  </mat-dialog-content>\r\n  <mat-dialog-actions>\r\n    <button mat-button type=\"submit\">Save</button>\r\n  </mat-dialog-actions>\r\n</form>\r\n"
+
+/***/ }),
+
+/***/ "./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.scss":
+/***/ (function(module, exports) {
+
+module.exports = "/**\n * Applies styles for users in high contrast mode. Note that this only applies\n * to Microsoft browsers. Chrome can be included by checking for the `html[hc]`\n * attribute, however Chrome handles high contrast differently.\n */\n/* Theme for the ripple elements.*/\n/* stylelint-disable material/no-prefixes */\n/* stylelint-enable */\n:host mat-chip-list mat-chip {\n  margin: 0 5px 15px; }\n:host mat-chip-list mat-chip:hover {\n    cursor: pointer; }\n:host mat-chip-list mat-chip.selected {\n    background-color: #ff5722; }\n"
+
+/***/ }),
+
+/***/ "./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AddHeroDialogComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_observable_of__ = __webpack_require__("./node_modules/rxjs/_esm5/add/observable/of.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ngrx_store__ = __webpack_require__("./node_modules/@ngrx/store/@ngrx/store.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__state_powers_actions_powers__ = __webpack_require__("./src/app/state/powers/actions/powers.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__state_powers_reducers__ = __webpack_require__("./src/app/state/powers/reducers/index.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__state_heroes_actions_heroes__ = __webpack_require__("./src/app/state/heroes/actions/heroes.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs__ = __webpack_require__("./node_modules/rxjs/Rx.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_rxjs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_rxjs_operators__ = __webpack_require__("./node_modules/rxjs/_esm5/operators.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__core_models_character_model__ = __webpack_require__("./src/app/core/models/character.model.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__core_services_characters_service__ = __webpack_require__("./src/app/core/services/characters.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+// NGrX Store
+
+
+
+
+
+
+
+
+var AddHeroDialogComponent = (function () {
+    function AddHeroDialogComponent(charactersService, formBuilder, HeroStore, PowerStore) {
+        this.charactersService = charactersService;
+        this.formBuilder = formBuilder;
+        this.HeroStore = HeroStore;
+        this.PowerStore = PowerStore;
+        this.selectedPowers = [];
+        this.selectPowers = new __WEBPACK_IMPORTED_MODULE_7_rxjs__["BehaviorSubject"]([]);
+    }
+    AddHeroDialogComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.form = this.formBuilder.group({
+            name: ['', __WEBPACK_IMPORTED_MODULE_1__angular_forms__["i" /* Validators */].required]
+        });
+        this.powers = this.PowerStore.select(__WEBPACK_IMPORTED_MODULE_5__state_powers_reducers__["a" /* getAllPowers */]);
+        this.PowerStore.dispatch(new __WEBPACK_IMPORTED_MODULE_4__state_powers_actions_powers__["s" /* LoadPowers */]());
+        this.filteredCharacters = this.form
+            .get("name")
+            .valueChanges.pipe(Object(__WEBPACK_IMPORTED_MODULE_8_rxjs_operators__["b" /* debounceTime */])(500), Object(__WEBPACK_IMPORTED_MODULE_8_rxjs_operators__["d" /* distinctUntilChanged */])(), Object(__WEBPACK_IMPORTED_MODULE_8_rxjs_operators__["j" /* switchMap */])(function (value) { return _this.filter(value); }));
+    };
+    AddHeroDialogComponent.prototype.characterSelected = function (event) {
+        this.character = event.option.value;
+        this.form.controls.name.setValue(event.option.value.name);
+    };
+    AddHeroDialogComponent.prototype.close = function () {
+        this.HeroStore.dispatch(new __WEBPACK_IMPORTED_MODULE_6__state_heroes_actions_heroes__["f" /* AddHeroDialogClose */]());
+    };
+    AddHeroDialogComponent.prototype.filter = function (name) {
+        if (name.length === 0) {
+            return __WEBPACK_IMPORTED_MODULE_7_rxjs__["Observable"].of([]);
+        }
+        return this.charactersService
+            .getCharacters(name)
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_8_rxjs_operators__["e" /* filter */])(function (marvelResponse) { return marvelResponse.code === 200; }), Object(__WEBPACK_IMPORTED_MODULE_8_rxjs_operators__["g" /* map */])(function (marvelResponse) { return marvelResponse.data.results; }));
+    };
+    AddHeroDialogComponent.prototype.onEsc = function () {
+        this.close();
+    };
+    AddHeroDialogComponent.prototype.save = function () {
+        if (!this.form.valid) {
+            return;
+        }
+        var hero = {};
+        if (this.character) {
+            hero.character = this.character;
+        }
+        else {
+            hero.character = Object(__WEBPACK_IMPORTED_MODULE_9__core_models_character_model__["a" /* generateCharacter */])();
+            hero.character.name = this.form.controls.name.value;
+        }
+        hero.powers = this.selectPowers.getValue().map(function (power) { return power.id; });
+        this.HeroStore.dispatch(new __WEBPACK_IMPORTED_MODULE_6__state_heroes_actions_heroes__["e" /* AddHero */](hero));
+    };
+    AddHeroDialogComponent.prototype.togglePower = function (power) {
+        var i = this.selectPowers.getValue().indexOf(power);
+        if (i > -1) {
+            var arr = this.selectPowers.getValue().slice();
+            arr.splice(i, 1);
+            this.selectPowers.next(arr);
+        }
+        else {
+            var arr = this.selectPowers.getValue().concat(power);
+            this.selectPowers.next(arr);
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* HostListener */])("keydown.esc"),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], AddHeroDialogComponent.prototype, "onEsc", null);
+    AddHeroDialogComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            template: __webpack_require__("./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.html"),
+            styles: [__webpack_require__("./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.scss")]
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_10__core_services_characters_service__["a" /* CharactersService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["b" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_3__ngrx_store__["h" /* Store */],
+            __WEBPACK_IMPORTED_MODULE_3__ngrx_store__["h" /* Store */]])
+    ], AddHeroDialogComponent);
+    return AddHeroDialogComponent;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/app-routing.module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -363,6 +503,56 @@ var MarvelInterceptor = (function () {
     return MarvelInterceptor;
 }());
 
+
+
+/***/ }),
+
+/***/ "./src/app/core/models/character.model.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export DefaultCharacter */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return generateCharacter; });
+var DefaultCharacter = (function () {
+    function DefaultCharacter() {
+        this.id = 1009610;
+        this.name = "Spider-Man";
+        this.description = "Bitten by a radioactive spider, high school student Peter Parker gained the speed, strength and powers of a spider. Adopting the name Spider-Man, Peter hoped to start a career using his new abilities. Taught that with great power comes great responsibility, Spidey has vowed to use his powers to help people.";
+        this.modified = "2016-09-28T12:21:24-0400";
+        this.thumbnail = {
+            path: "http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b",
+            extension: "jpg"
+        };
+    }
+    return DefaultCharacter;
+}());
+
+var generateCharacter = function () {
+    return {
+        "id": 1009610,
+        "name": "Spider-Man",
+        "description": "Bitten by a radioactive spider, high school student Peter Parker gained the speed, strength and powers of a spider. Adopting the name Spider-Man, Peter hoped to start a career using his new abilities. Taught that with great power comes great responsibility, Spidey has vowed to use his powers to help people.",
+        "modified": "2016-09-28T12:21:24-0400",
+        "thumbnail": {
+            "path": "http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b",
+            "extension": "jpg"
+        },
+        "urls": [
+            {
+                "type": "detail",
+                "url": "http://marvel.com/characters/54/spider-man?utm_campaign=apiRef&utm_source=e412b613dc219df8468f501f5524c190"
+            },
+            {
+                "type": "wiki",
+                "url": "http://marvel.com/universe/Spider-Man_(Peter_Parker)?utm_campaign=apiRef&utm_source=e412b613dc219df8468f501f5524c190"
+            },
+            {
+                "type": "comiclink",
+                "url": "http://marvel.com/comics/characters/1009610/spider-man?utm_campaign=apiRef&utm_source=e412b613dc219df8468f501f5524c190"
+            }
+        ]
+    };
+};
 
 
 /***/ }),
@@ -848,6 +1038,7 @@ var AddPowerDialogComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_layout_layout_component__ = __webpack_require__("./src/app/shared/components/layout/layout.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__containers_not_found_not_found_component__ = __webpack_require__("./src/app/shared/containers/not-found/not-found.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__dialogs_add_power_dialog_add_power_dialog_component__ = __webpack_require__("./src/app/shared/dialogs/add-power-dialog/add-power-dialog.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__heroes_components_add_hero_dialog_add_hero_dialog_component__ = __webpack_require__("./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -864,8 +1055,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+
 var components = [
     __WEBPACK_IMPORTED_MODULE_9__dialogs_add_power_dialog_add_power_dialog_component__["a" /* AddPowerDialogComponent */],
+    __WEBPACK_IMPORTED_MODULE_10__heroes_components_add_hero_dialog_add_hero_dialog_component__["a" /* AddHeroDialogComponent */],
     __WEBPACK_IMPORTED_MODULE_6__components_dialog_header_dialog_header_component__["a" /* DialogHeaderComponent */],
     __WEBPACK_IMPORTED_MODULE_7__components_layout_layout_component__["a" /* LayoutComponent */],
     __WEBPACK_IMPORTED_MODULE_8__containers_not_found_not_found_component__["a" /* NotFoundComponent */]
@@ -878,8 +1071,15 @@ var SharedModule = (function () {
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_common__["b" /* CommonModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_flex_layout__["a" /* FlexLayoutModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["a" /* MatAutocompleteModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_material__["b" /* MatButtonModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["c" /* MatCardModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["l" /* MatMenuModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["d" /* MatChipsModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_material__["f" /* MatDialogModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["r" /* MatSnackBarModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["n" /* MatProgressSpinnerModule */],
+                __WEBPACK_IMPORTED_MODULE_4__angular_material__["m" /* MatProgressBarModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_material__["h" /* MatFormFieldModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_material__["i" /* MatIconModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_material__["j" /* MatInputModule */],
@@ -890,7 +1090,8 @@ var SharedModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_3__angular_forms__["h" /* ReactiveFormsModule */]
             ],
             entryComponents: [
-                __WEBPACK_IMPORTED_MODULE_9__dialogs_add_power_dialog_add_power_dialog_component__["a" /* AddPowerDialogComponent */]
+                __WEBPACK_IMPORTED_MODULE_9__dialogs_add_power_dialog_add_power_dialog_component__["a" /* AddPowerDialogComponent */],
+                __WEBPACK_IMPORTED_MODULE_10__heroes_components_add_hero_dialog_add_hero_dialog_component__["a" /* AddHeroDialogComponent */]
             ],
             declarations: components.slice(),
             exports: components.slice()
@@ -966,6 +1167,361 @@ function logger(reducer) {
 var appMetaReducers = !__WEBPACK_IMPORTED_MODULE_2__environments_environment__["a" /* environment */].production
     ? [logger, __WEBPACK_IMPORTED_MODULE_1_ngrx_store_freeze__["storeFreeze"]]
     : [];
+
+
+/***/ }),
+
+/***/ "./src/app/state/heroes/actions/heroes.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return LOAD_HEROES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return LOAD_HEROES_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return LOAD_HERO; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return LOAD_HERO_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ADD_HERO; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return ADD_HERO_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ADD_HERO_DIALOG_CLOSE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return ADD_HERO_DIALOG_OPEN; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return DELETE_HERO; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return DELETE_HERO_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "t", function() { return SELECT_HERO; });
+/* unused harmony export UPDATE_HERO */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "u", function() { return UPDATE_HERO_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return LoadHeroes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return LoadHeroesSuccess; });
+/* unused harmony export LoadHero */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return LoadHeroSuccess; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return AddHero; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return AddHeroSuccess; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return AddHeroDialogClose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return AddHeroDialogOpen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return DeleteHero; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return DeleteHeroSuccess; });
+/* unused harmony export SelectHero */
+/* unused harmony export UpdateHero */
+/* unused harmony export UpdateHeroSuccess */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__shared_utils__ = __webpack_require__("./src/app/state/shared/utils.ts");
+
+// LOAD
+var LOAD_HEROES = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('LOAD_HEROES');
+var LOAD_HEROES_SUCCESS = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('LOAD_HEROES_SUCCESS');
+var LOAD_HERO = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('LOAD_HERO');
+var LOAD_HERO_SUCCESS = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('LOAD_HERO_SUCCESS');
+// ADD
+var ADD_HERO = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('ADD_HERO');
+var ADD_HERO_SUCCESS = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('ADD_HERO_SUCCESS');
+var ADD_HERO_DIALOG_CLOSE = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('ADD_HERO_DIALOG_CLOSE');
+var ADD_HERO_DIALOG_OPEN = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('ADD_HERO_DIALOG_OPEN');
+// DELETE
+var DELETE_HERO = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('DELETE_HERO');
+var DELETE_HERO_SUCCESS = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('DELETE_HERO_SUCCESS');
+// UPDATE
+var SELECT_HERO = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('SELECT_HERO');
+var UPDATE_HERO = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('UPDATE_HERO');
+var UPDATE_HERO_SUCCESS = Object(__WEBPACK_IMPORTED_MODULE_0__shared_utils__["b" /* createActionType */])('UPDATE_HERO_SUCCESS');
+// LOAD
+var LoadHeroes = (function () {
+    function LoadHeroes() {
+        this.type = LOAD_HEROES;
+    }
+    return LoadHeroes;
+}());
+
+var LoadHeroesSuccess = (function () {
+    function LoadHeroesSuccess(payload) {
+        this.payload = payload;
+        this.type = LOAD_HEROES_SUCCESS;
+    }
+    return LoadHeroesSuccess;
+}());
+
+var LoadHero = (function () {
+    function LoadHero(payload) {
+        this.payload = payload;
+        this.type = LOAD_HERO;
+    }
+    return LoadHero;
+}());
+
+var LoadHeroSuccess = (function () {
+    function LoadHeroSuccess(payload) {
+        this.payload = payload;
+        this.type = LOAD_HERO_SUCCESS;
+    }
+    return LoadHeroSuccess;
+}());
+
+// ADD
+var AddHero = (function () {
+    function AddHero(payload) {
+        this.payload = payload;
+        this.type = ADD_HERO;
+    }
+    return AddHero;
+}());
+
+var AddHeroSuccess = (function () {
+    function AddHeroSuccess(payload) {
+        this.payload = payload;
+        this.type = ADD_HERO_SUCCESS;
+    }
+    return AddHeroSuccess;
+}());
+
+var AddHeroDialogClose = (function () {
+    function AddHeroDialogClose() {
+        this.type = ADD_HERO_DIALOG_CLOSE;
+    }
+    return AddHeroDialogClose;
+}());
+
+var AddHeroDialogOpen = (function () {
+    function AddHeroDialogOpen() {
+        this.type = ADD_HERO_DIALOG_OPEN;
+    }
+    return AddHeroDialogOpen;
+}());
+
+// DELETE
+var DeleteHero = (function () {
+    function DeleteHero(payload) {
+        this.payload = payload;
+        this.type = DELETE_HERO;
+    }
+    return DeleteHero;
+}());
+
+var DeleteHeroSuccess = (function () {
+    function DeleteHeroSuccess(payload) {
+        this.payload = payload;
+        this.type = DELETE_HERO_SUCCESS;
+    }
+    return DeleteHeroSuccess;
+}());
+
+// MODIFY
+var SelectHero = (function () {
+    function SelectHero(payload) {
+        this.payload = payload;
+        this.type = SELECT_HERO;
+    }
+    return SelectHero;
+}());
+
+var UpdateHero = (function () {
+    function UpdateHero(payload) {
+        this.payload = payload;
+        this.type = UPDATE_HERO;
+    }
+    return UpdateHero;
+}());
+
+var UpdateHeroSuccess = (function () {
+    function UpdateHeroSuccess(payload) {
+        this.payload = payload;
+        this.type = UPDATE_HERO_SUCCESS;
+    }
+    return UpdateHeroSuccess;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/state/heroes/effects/heroes.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeroesEffects; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ngrx_effects__ = __webpack_require__("./node_modules/@ngrx/effects/@ngrx/effects.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__ = __webpack_require__("./node_modules/rxjs/_esm5/Observable.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_material__ = __webpack_require__("./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_operators__ = __webpack_require__("./node_modules/rxjs/_esm5/operators.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__core_services_heroes_service__ = __webpack_require__("./src/app/core/services/heroes.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__heroes_components_add_hero_dialog_add_hero_dialog_component__ = __webpack_require__("./src/app/+heroes/components/add-hero-dialog/add-hero-dialog.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__shared_actions_snackbar__ = __webpack_require__("./src/app/state/shared/actions/snackbar.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__actions_heroes__ = __webpack_require__("./src/app/state/heroes/actions/heroes.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+
+
+
+
+var HeroesEffects = (function () {
+    function HeroesEffects(actions, HeroesService, matDialog) {
+        var _this = this;
+        this.actions = actions;
+        this.HeroesService = HeroesService;
+        this.matDialog = matDialog;
+        this.addHero = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["a" /* ADD_HERO */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (action) { return action.payload; }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["j" /* switchMap */])(function (hero) { return _this.HeroesService.createHero(hero); }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (hero) { return new __WEBPACK_IMPORTED_MODULE_8__actions_heroes__["h" /* AddHeroSuccess */](hero); }));
+        this.addHeroSuccess = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["d" /* ADD_HERO_SUCCESS */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["h" /* mergeMap */])(function () { return [
+            new __WEBPACK_IMPORTED_MODULE_7__shared_actions_snackbar__["d" /* SnackbarOpen */]({
+                message: 'Hero Created',
+                action: 'Success'
+            }),
+            new __WEBPACK_IMPORTED_MODULE_8__actions_heroes__["f" /* AddHeroDialogClose */]()
+        ]; }));
+        this.loadHeroes = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["n" /* LOAD_HEROES */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["j" /* switchMap */])(function () { return _this.HeroesService.getHeroes(); }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (powers) { return new __WEBPACK_IMPORTED_MODULE_8__actions_heroes__["s" /* LoadHeroesSuccess */](powers); }));
+        this.loadHero = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["m" /* LOAD_HERO */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (action) { return action.payload; }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["j" /* switchMap */])(function (payload) { return _this.HeroesService.getHero(payload.id); }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (power) { return new __WEBPACK_IMPORTED_MODULE_8__actions_heroes__["q" /* LoadHeroSuccess */](power); }));
+        this.addHeroDialogClose = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["b" /* ADD_HERO_DIALOG_CLOSE */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["k" /* tap */])(function () { return _this.matDialog.closeAll(); }));
+        this.addHeroDialogOpen = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["c" /* ADD_HERO_DIALOG_OPEN */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["k" /* tap */])(function () { return _this.matDialog.open(__WEBPACK_IMPORTED_MODULE_6__heroes_components_add_hero_dialog_add_hero_dialog_component__["a" /* AddHeroDialogComponent */]); }));
+        this.deletePower = this.actions.ofType(__WEBPACK_IMPORTED_MODULE_8__actions_heroes__["i" /* DELETE_HERO */])
+            .pipe(Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (action) { return action.payload; }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["j" /* switchMap */])(function (power) { return _this.HeroesService.deleteHero(power); }), Object(__WEBPACK_IMPORTED_MODULE_4_rxjs_operators__["g" /* map */])(function (power) { return new __WEBPACK_IMPORTED_MODULE_8__actions_heroes__["l" /* DeleteHeroSuccess */](power); }));
+    }
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "addHero", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "addHeroSuccess", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "loadHeroes", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "loadHero", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])({
+            dispatch: false
+        }),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "addHeroDialogClose", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])({
+            dispatch: false
+        }),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "addHeroDialogOpen", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["b" /* Effect */])(),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2_rxjs_Observable__["a" /* Observable */])
+    ], HeroesEffects.prototype, "deletePower", void 0);
+    HeroesEffects = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__ngrx_effects__["a" /* Actions */],
+            __WEBPACK_IMPORTED_MODULE_5__core_services_heroes_service__["a" /* HeroesService */],
+            __WEBPACK_IMPORTED_MODULE_3__angular_material__["e" /* MatDialog */]])
+    ], HeroesEffects);
+    return HeroesEffects;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/state/heroes/reducers/heroes.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return adapter; });
+/* harmony export (immutable) */ __webpack_exports__["d"] = reducer;
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return getSelectedHeroId; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return isLoading; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ngrx_entity__ = __webpack_require__("./node_modules/@ngrx/entity/@ngrx/entity.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actions_heroes__ = __webpack_require__("./src/app/state/heroes/actions/heroes.ts");
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+
+
+var adapter = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_entity__["a" /* createEntityAdapter */])();
+var initialState = adapter.getInitialState({
+    addDialogShow: false,
+    loading: false,
+    selectedHeroId: null
+});
+function reducer(state, action) {
+    if (state === void 0) { state = initialState; }
+    switch (action.type) {
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["c" /* ADD_HERO_DIALOG_OPEN */]:
+            return __assign({}, state, { addDialogShow: false });
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["b" /* ADD_HERO_DIALOG_CLOSE */]:
+            return __assign({}, state, { addDialogShow: true });
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["d" /* ADD_HERO_SUCCESS */]:
+            return adapter.addOne(action.payload, state);
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["j" /* DELETE_HERO_SUCCESS */]:
+            return adapter.removeOne(action.payload.id, state);
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["n" /* LOAD_HEROES */]:
+            return __assign({}, state, { loading: true });
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["o" /* LOAD_HEROES_SUCCESS */]:
+            state = __assign({}, state, { loading: false });
+            return adapter.addAll(action.payload, state);
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["p" /* LOAD_HERO_SUCCESS */]:
+            return adapter.addOne(action.payload, state);
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["t" /* SELECT_HERO */]:
+            return __assign({}, state, { selectedHeroId: action.payload.id });
+        case __WEBPACK_IMPORTED_MODULE_1__actions_heroes__["u" /* UPDATE_HERO_SUCCESS */]:
+            return adapter.updateOne({
+                id: action.payload.id,
+                changes: action.payload
+            }, state);
+        default:
+            return state;
+    }
+}
+var getSelectedHeroId = function (state) { return state.selectedHeroId; };
+var isLoading = function (state) { return state.loading; };
+
+
+/***/ }),
+
+/***/ "./src/app/state/heroes/reducers/index.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return reducers; });
+/* unused harmony export getHeroesState */
+/* unused harmony export getHeroesEntityState */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getAllHeroes; });
+/* unused harmony export getHeroEntities */
+/* unused harmony export getHeroIds */
+/* unused harmony export getHeroesTotal */
+/* unused harmony export getSelectedHeroId */
+/* unused harmony export getSelectedHero */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return isHeroLoading; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ngrx_store__ = __webpack_require__("./node_modules/@ngrx/store/@ngrx/store.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__heroes__ = __webpack_require__("./src/app/state/heroes/reducers/heroes.ts");
+
+
+var reducers = {
+    heroes: __WEBPACK_IMPORTED_MODULE_1__heroes__["d" /* reducer */]
+};
+var getHeroesState = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_store__["l" /* createFeatureSelector */])('heroes');
+var getHeroesEntityState = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_store__["m" /* createSelector */])(getHeroesState, function (state) { return state.heroes; });
+var getAllHeroes = (_a = __WEBPACK_IMPORTED_MODULE_1__heroes__["a" /* adapter */].getSelectors(getHeroesEntityState), _a.selectAll), getHeroEntities = _a.selectEntities, getHeroIds = _a.selectIds, getHeroesTotal = _a.selectTotal;
+var getSelectedHeroId = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_store__["m" /* createSelector */])(getHeroesEntityState, __WEBPACK_IMPORTED_MODULE_1__heroes__["b" /* getSelectedHeroId */]);
+var getSelectedHero = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_store__["m" /* createSelector */])(getHeroEntities, getSelectedHeroId, function (entities, selectedHeroId) { return selectedHeroId && entities[selectedHeroId]; });
+var isHeroLoading = Object(__WEBPACK_IMPORTED_MODULE_0__ngrx_store__["m" /* createSelector */])(getHeroesEntityState, __WEBPACK_IMPORTED_MODULE_1__heroes__["c" /* isLoading */]);
+var _a;
 
 
 /***/ }),
@@ -1591,10 +2147,12 @@ var CustomSerializer = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__app_effects__ = __webpack_require__("./src/app/state/app.effects.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__app_reducer__ = __webpack_require__("./src/app/state/app.reducer.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__powers_effects_powers__ = __webpack_require__("./src/app/state/powers/effects/powers.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__powers_reducers__ = __webpack_require__("./src/app/state/powers/reducers/index.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__shared_effects_error__ = __webpack_require__("./src/app/state/shared/effects/error.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__shared_effects_snackbar__ = __webpack_require__("./src/app/state/shared/effects/snackbar.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__shared_utils__ = __webpack_require__("./src/app/state/shared/utils.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__heroes_effects_heroes__ = __webpack_require__("./src/app/state/heroes/effects/heroes.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__powers_reducers__ = __webpack_require__("./src/app/state/powers/reducers/index.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__heroes_reducers__ = __webpack_require__("./src/app/state/heroes/reducers/index.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__shared_effects_error__ = __webpack_require__("./src/app/state/shared/effects/error.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__shared_effects_snackbar__ = __webpack_require__("./src/app/state/shared/effects/snackbar.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__shared_utils__ = __webpack_require__("./src/app/state/shared/utils.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1607,6 +2165,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+
+
 
 
 
@@ -1635,7 +2195,7 @@ var StateModule = (function () {
             providers: [
                 {
                     provide: __WEBPACK_IMPORTED_MODULE_3__ngrx_router_store__["a" /* RouterStateSerializer */],
-                    useClass: __WEBPACK_IMPORTED_MODULE_14__shared_utils__["a" /* CustomSerializer */]
+                    useClass: __WEBPACK_IMPORTED_MODULE_16__shared_utils__["a" /* CustomSerializer */]
                 }
             ]
         };
@@ -1649,13 +2209,15 @@ var StateModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_4__ngrx_store__["i" /* StoreModule */].forRoot(__WEBPACK_IMPORTED_MODULE_9__app_reducer__["b" /* appReducer */], {
                     metaReducers: __WEBPACK_IMPORTED_MODULE_9__app_reducer__["a" /* appMetaReducers */]
                 }),
-                __WEBPACK_IMPORTED_MODULE_4__ngrx_store__["i" /* StoreModule */].forFeature('powers', __WEBPACK_IMPORTED_MODULE_11__powers_reducers__["e" /* reducers */]),
+                __WEBPACK_IMPORTED_MODULE_4__ngrx_store__["i" /* StoreModule */].forFeature('powers', __WEBPACK_IMPORTED_MODULE_12__powers_reducers__["e" /* reducers */]),
+                __WEBPACK_IMPORTED_MODULE_4__ngrx_store__["i" /* StoreModule */].forFeature('heroes', __WEBPACK_IMPORTED_MODULE_13__heroes_reducers__["c" /* reducers */]),
                 __WEBPACK_IMPORTED_MODULE_3__ngrx_router_store__["b" /* StoreRouterConnectingModule */].forRoot(),
                 __WEBPACK_IMPORTED_MODULE_2__ngrx_effects__["c" /* EffectsModule */].forRoot([
                     __WEBPACK_IMPORTED_MODULE_8__app_effects__["a" /* AppEffects */],
-                    __WEBPACK_IMPORTED_MODULE_12__shared_effects_error__["a" /* ErrorEffects */],
-                    __WEBPACK_IMPORTED_MODULE_13__shared_effects_snackbar__["a" /* SnackbarEffects */],
+                    __WEBPACK_IMPORTED_MODULE_14__shared_effects_error__["a" /* ErrorEffects */],
+                    __WEBPACK_IMPORTED_MODULE_15__shared_effects_snackbar__["a" /* SnackbarEffects */],
                     __WEBPACK_IMPORTED_MODULE_10__powers_effects_powers__["a" /* PowersEffects */],
+                    __WEBPACK_IMPORTED_MODULE_11__heroes_effects_heroes__["a" /* HeroesEffects */]
                 ]),
                 !__WEBPACK_IMPORTED_MODULE_6__environments_environment__["a" /* environment */].production ? __WEBPACK_IMPORTED_MODULE_5__ngrx_store_devtools__["a" /* StoreDevtoolsModule */].instrument() : [],
             ],
